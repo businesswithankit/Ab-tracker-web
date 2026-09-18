@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AB Tracker — Premium AMOLED Expense & Finance Manager</title>
+    <meta name="description" content="Take control of your personal finances with AB Tracker. 100% offline, privacy-first Android expense tracker, loan ledger, and bill reminder engine.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23ffffff'/><text x='50%' y='62%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='50' fill='%23000000'>AB</text></svg>">
+    <style>
+        :root {
+            --bg-pure: #000000;
+            --surface-1: #0f1626;
+            --surface-2: #162035;
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(6, 182, 212, 0.35);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-rose: #f43f5e;
+            --accent-purple: #a855f7;
+            --accent-amber: #f59e0b;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --container-max: 1200px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-pure);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .ambient-glow-top {
+            position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+            width: 700px; height: 400px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 80%);
+            pointer-events: none; filter: blur(60px);
+        }
+        header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-glass);
+        }
+        .nav-container {
+            max-width: var(--container-max); margin: 0 auto;
+            padding: 16px 24px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .brand-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
+        .brand-icon {
+            width: 38px; height: 38px; background: #fff; color: #000;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 17px;
+        }
+        .brand-text h1 { font-size: 18px; font-weight: 700; line-height: 1.1; }
+        .brand-text span { font-size: 11px; color: var(--accent-cyan); font-weight: 600; text-transform: uppercase; }
+        .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .nav-cta {
+            background: #fff; color: #000; padding: 9px 20px; border-radius: 9999px;
+            font-size: 13.5px; font-weight: 700; text-decoration: none;
+        }
+        .hero {
+            position: relative; max-width: var(--container-max); margin: 0 auto;
+            padding: 60px 24px 80px; display: grid; grid-template-columns: 1.15fr 0.85fr;
+            gap: 48px; align-items: center;
+        }
+        .badge-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.3);
+            color: var(--accent-cyan); padding: 6px 14px; border-radius: 9999px;
+            font-size: 13px; font-weight: 600; margin-bottom: 24px;
+        }
+        .badge-dot { width: 8px; height: 8px; background: var(--accent-cyan); border-radius: 50%; }
+        .hero-title { font-size: 48px; font-weight: 800; line-height: 1.15; margin-bottom: 20px; }
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 30%, var(--accent-cyan) 80%, var(--accent-emerald) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-desc { font-size: 18px; color: var(--text-secondary); margin-bottom: 32px; max-width: 540px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 40px; }
+        .btn-primary {
+            background: #fff; color: #000; padding: 14px 28px; border-radius: 14px;
+            font-size: 15px; font-weight: 700; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-secondary {
+            background: var(--surface-1); color: #fff; padding: 14px 26px; border-radius: 14px;
+            border: 1px solid var(--border-glass); font-size: 15px; font-weight: 600; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .hero-highlights {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+            border-top: 1px solid var(--border-glass); padding-top: 24px;
+        }
+        .highlight-item h4 { font-size: 20px; font-weight: 800; }
+        .highlight-item p { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+        .phone-mockup-wrapper { position: relative; display: flex; justify-content: center; }
+        .phone-mockup {
+            width: 320px; height: 650px; background: #000; border-radius: 44px;
+            border: 8px solid #222630; box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 40px rgba(6,182,212,0.15);
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .phone-notch {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            width: 80px; height: 18px; background: #222630; border-radius: 20px; z-index: 10;
+        }
+        .app-screen { padding: 34px 14px 14px; background: #000; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        .app-card { background: #121622; border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 14px; }
+        .balance-amount { font-size: 26px; font-weight: 800; color: #fff; margin: 4px 0 8px; }
+        .app-quick-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center; }
+        .quick-btn { background: #151a28; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 8px 2px; }
+        .quick-icon { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+        .quick-label { font-size: 8.5px; font-weight: 600; color: #fff; }
+        section { padding: 90px 24px; max-width: var(--container-max); margin: 0 auto; }
+        .section-header { text-align: center; max-width: 680px; margin: 0 auto 56px; }
+        .section-subtitle { color: var(--accent-cyan); font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; }
+        .section-title { font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .feature-card { background: var(--surface-1); border: 1px solid var(--border-glass); border-radius: 20px; padding: 30px; }
+        .feature-icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 20px; }
+        .tabs-container { background: var(--surface-1); border: 1px solid var(--border-glass); border-radius: 24px; padding: 32px; }
+        .tab-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; border-bottom: 1px solid var(--border-glass); padding-bottom: 16px; }
+        .tab-btn { background: transparent; border: 1px solid var(--border-glass); color: var(--text-secondary); padding: 10px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .tab-btn.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); font-weight: 700; }
+        .tab-content { display: none; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .tab-content.active { display: grid; }
+        .safety-banner {
+            background: linear-gradient(135deg, rgba(6,182,212,0.08) 0%, rgba(16,185,129,0.08) 100%);
+            border: 1px solid rgba(6,182,212,0.25); border-radius: 24px; padding: 40px;
+            display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px; align-items: center;
+        }
+        .faq-list { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+        .faq-item { background: var(--surface-1); border: 1px solid var(--border-glass); border-radius: 16px; overflow: hidden; }
+        .faq-question { width: 100%; background: transparent; border: none; padding: 20px 24px; text-align: left; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; color: var(--text-secondary); font-size: 14.5px; padding: 0 24px; }
+        .faq-item.open .faq-answer { max-height: 250px; padding: 0 24px 20px; }
+        .cta-section { background: radial-gradient(circle at center, #121b2d 0%, #080c14 100%); border: 1px solid var(--border-glass); border-radius: 30px; padding: 60px 32px; text-align: center; }
+        footer { background: #04060a; border-top: 1px solid var(--border-glass); padding: 60px 24px 30px; }
+        .footer-container { max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; }
+        .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .footer-col a { color: var(--text-secondary); text-decoration: none; font-size: 14px; }
+        .footer-bottom { max-width: var(--container-max); margin: 40px auto 0; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 24px; display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); }
+        @media(max-width: 968px) {
+            .hero, .tab-content, .safety-banner, .footer-container { grid-template-columns: 1fr; }
+            .hero { text-align: center; }
+            .hero-actions { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow-top"></div>
+    <header>
+        <div class="nav-container">
+            <a href="#" class="brand-logo">
+                <div class="brand-icon">AB</div>
+                <div class="brand-text">
+                    <h1>AB Tracker</h1>
+                    <span>AMOLED Finance</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#deep-dive">Modules</a></li>
+                <li><a href="#privacy">Data Safety</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="privacy-policy.html">Privacy Policy</a></li>
+            </ul>
+            <a href="#download" class="nav-cta">Get App</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge-pill"><span class="badge-dot"></span> 100% Offline • Zero Remote Trackers</div>
+                <h1 class="hero-title">Master Your Finances in <br><span class="gradient-text">Pure AMOLED Darkness</span></h1>
+                <p class="hero-desc">The privacy-first Android financial tracker. Record expenses, manage loan debts, track subscriptions, and schedule alarms with zero cloud tracking.</p>
+                <div class="hero-actions">
+                    <a href="#download" class="btn-primary">Download for Android</a>
+                    <a href="#features" class="btn-secondary">Explore Features &darr;</a>
+                </div>
+                <div class="hero-highlights">
+                    <div class="highlight-item"><h4>100% Local</h4><p>SQLite Room DB</p></div>
+                    <div class="highlight-item"><h4>Zero Ads</h4><p>No Tracking SDKs</p></div>
+                    <div class="highlight-item"><h4>AMOLED</h4><p>Battery-Saving UI</p></div>
+                </div>
+            </div>
+
+            <div class="phone-mockup-wrapper">
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    <div class="app-screen">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <div style="font-size:9px; color:#94a3b8;">Good Afternoon</div>
+                                <div style="font-weight:800; font-size:16px;">AB Tracker</div>
+                            </div>
+                            <div style="width:28px; height:28px; border-radius:50%; background:#fff; color:#000; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:11px;">AB</div>
+                        </div>
+                        <div class="app-card">
+                            <div style="display:flex; justify-content:space-between; font-size:9px; color:#94a3b8; font-weight:700;">
+                                <span>CURRENT BALANCE</span>
+                                <span style="background:rgba(244,63,94,0.15); color:var(--accent-rose); padding:2px 8px; border-radius:12px;">📉 Net Loss</span>
+                            </div>
+                            <div class="balance-amount">₹ -9,000.00</div>
+                            <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.06); padding-top:8px; font-size:10px;">
+                                <div><span style="color:#64748b; font-size:8px;">Total Revenue</span><br><b style="color:var(--accent-emerald)">₹ 1,000.00</b></div>
+                                <div style="text-align:right;"><span style="color:#64748b; font-size:8px;">Total Expense</span><br><b style="color:var(--accent-rose)">₹ 10,000.00</b></div>
+                            </div>
+                        </div>
+                        <div style="font-size:10px; font-weight:700;">Quick Actions</div>
+                        <div class="app-quick-grid">
+                            <div class="quick-btn"><div class="quick-icon" style="background:rgba(6,182,212,0.2); color:var(--accent-cyan)">+</div><div class="quick-label">Add Pay</div></div>
+                            <div class="quick-btn"><div class="quick-icon" style="background:rgba(245,158,11,0.2); color:var(--accent-amber)">🏛️</div><div class="quick-label">Loan</div></div>
+                            <div class="quick-btn"><div class="quick-icon" style="background:rgba(168,85,247,0.2); color:var(--accent-purple)">📺</div><div class="quick-label">Sub</div></div>
+                            <div class="quick-btn"><div class="quick-icon" style="background:rgba(16,185,129,0.2); color:var(--accent-emerald)">🔧</div><div class="quick-label">Service</div></div>
+                            <div class="quick-btn"><div class="quick-icon" style="background:rgba(255,255,255,0.15); color:#fff">🔗</div><div class="quick-label">Link</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section id="features">
+            <div class="section-header">
+                <div class="section-subtitle">Core Capabilities</div>
+                <h2 class="section-title">Engineered for Complete Financial Control</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon-box" style="background:rgba(6,182,212,0.15); color:var(--accent-cyan)">🛡️</div><h3>100% Offline & Private</h3><p>Powered by an on-device encrypted SQLite Room database. No account required, zero cloud leaks.</p></div>
+                <div class="feature-card"><div class="feature-icon-box" style="background:rgba(16,185,129,0.15); color:var(--accent-emerald)">📊</div><h3>Multi-Source Income & Expense</h3><p>Log transactions across UPI, Cash, Bank, Debit/Credit Card, and Wallets with color-coded categories.</p></div>
+                <div class="feature-card"><div class="feature-icon-box" style="background:rgba(245,158,11,0.15); color:var(--accent-amber)">🤝</div><h3>Lent & Borrowed Loan Ledger</h3><p>Keep a clear ledger of money lent to friends or borrowed with installment and partial payment records.</p></div>
+                <div class="feature-card"><div class="feature-icon-box" style="background:rgba(168,85,247,0.15); color:var(--accent-purple)">🔄</div><h3>Subscriptions & Services</h3><p>Track OTT memberships, gym passes, and utility services with billing renewal projections.</p></div>
+                <div class="feature-card"><div class="feature-icon-box" style="background:rgba(244,63,94,0.15); color:var(--accent-rose)">⏰</div><h3>Exact Alarm Reminders</h3><p>Scheduled alarms wake up your device for upcoming dues even if your phone reboots.</p></div>
+                <div class="feature-card"><div class="feature-icon-box" style="background:rgba(255,255,255,0.15); color:#fff">📑</div><h3>PDF & CSV Statements</h3><p>Generate audit-ready PDF statements or raw CSV spreadsheets anytime.</p></div>
+            </div>
+        </section>
+
+        <!-- Data Safety -->
+        <section id="privacy">
+            <div class="safety-banner">
+                <div>
+                    <div class="section-subtitle">Google Play Data Safety</div>
+                    <h2 style="font-size:30px; font-weight:800; margin-bottom:12px;">Zero Data Collection. Zero Cloud Leaks.</h2>
+                    <p style="color:var(--text-secondary); margin-bottom:20px;">Unlike banking apps that upload your SMS and credit scores to third-party ad networks, AB Tracker is 100% offline.</p>
+                    <a href="privacy-policy.html" class="btn-secondary" style="font-size:13.5px; padding:10px 18px;">Read Full Privacy Policy &rarr;</a>
+                </div>
+                <div style="background:rgba(0,0,0,0.5); border:1px solid var(--border-glass); border-radius:18px; padding:24px; text-align:center;">
+                    <div style="font-size:42px; margin-bottom:10px;">🛡️</div>
+                    <h4 style="font-size:18px; font-weight:700; margin-bottom:8px;">Privacy Guarantee</h4>
+                    <p style="font-size:13px; color:var(--text-secondary);">We never ask for bank passwords or contact lists. You remain the sole owner of your data.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq">
+            <div class="section-header">
+                <div class="section-subtitle">Common Inquiries</div>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question">Does AB Tracker need an active internet connection? <span>+</span></button>
+                    <div class="faq-answer">No. AB Tracker is 100% offline-first. You can record transactions and generate reports without mobile data.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Where is my financial data stored? <span>+</span></button>
+                    <div class="faq-answer">All data is stored inside your phone's internal SQLite Room database sandbox. Nothing is transmitted to any cloud.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">How can I backup my data? <span>+</span></button>
+                    <div class="faq-answer">Tap "Backup JSON" in Settings to create a full snapshot file that you can save to Google Drive or email to yourself.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section id="download" style="padding-top:0;">
+            <div class="cta-section">
+                <h2 style="font-size:36px; font-weight:800; margin-bottom:14px;">Take Control of Your Money Today</h2>
+                <p style="color:var(--text-secondary); margin-bottom:28px;">Download AB Tracker for Android and enjoy private, sleek personal finance tracking.</p>
+                <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+                    <a href="#" class="btn-primary" onclick="alert('Google Play Store link will be live once your app is published.'); return false;">Get on Google Play</a>
+                    <button class="btn-secondary" onclick="navigator.clipboard.writeText('zulubusiness71@gmail.com'); alert('Developer email copied: zulubusiness71@gmail.com');">📋 Copy Developer Contact</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <div class="brand-logo" style="margin-bottom:14px;">
+                    <div class="brand-icon">AB</div>
+                    <div class="brand-text"><h1>AB Tracker</h1><span>AMOLED Finance Suite</span></div>
+                </div>
+                <p style="font-size:13.5px; color:var(--text-secondary);">Offline-first personal expense tracking, loan ledger, and reminder alarms.</p>
+            </div>
+            <div class="footer-col">
+                <h4 style="margin-bottom:14px;">Navigation</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#privacy">Data Safety</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4 style="margin-bottom:14px;">Legal</h4>
+                <ul>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4 style="margin-bottom:14px;">Contact</h4>
+                <a href="mailto:zulubusiness71@gmail.com" style="color:var(--accent-cyan); font-weight:700;">zulubusiness71@gmail.com</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 AB Tracker. All rights reserved.</div>
+            <div>Version 1.0.0 Production Release</div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(b => {
+            b.addEventListener('click', () => b.parentElement.classList.toggle('open'));
+        });
+    </script>
+</body>
+</html>
